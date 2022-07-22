@@ -7,18 +7,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/tourApp', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
-// .then (() => {
-//     console.log('OPEN CONNECTION!!!')
-// })
-// .catch (() => {
-//     console.log('Error MONGO connection!!!')
-// })
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
     console.log("Database Connected");
-})
+});
 
 const app = express();
 
