@@ -60,6 +60,12 @@ app.put('/attractions/:id', async (req, res) => {
     res.redirect(`/attractions/${attraction._id}`);
 })
 
+app.delete('/attractions/:id', async (req, res) => {
+    const { id } = req.params;
+    await Attractions.findByIdAndRemove(id);
+    res.redirect('/attractions');
+} )
+
 app.listen(3000, () => {
     console.log('Server on port 3000')
 });

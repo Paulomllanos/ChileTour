@@ -12,6 +12,11 @@
     <p>
         <a href="/attractions/<%= attraction._id%>/edit">Edit</a>
     </p>
+    <p>
+        <form action="/attractions/<%=attraction._id%>?_method=DELETE" method="POST">
+        <button>Delete</button>
+        </form>
+    </p>
     <footer>
         <a href="/attractions">All Attractions</a>
     </footer>
