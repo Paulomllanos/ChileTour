@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Attraction</title>
+</head>
+<body>
+    <h1>Edit Attraction</h1>
+    <form action="/attractions/<%= attraction._id%>?_method=PUT" method="POST">
+        <div>
+            <label for="title">Title</label>
+            <input type="text" id="title" name="attraction[title]" value="<%= attraction.title %>">
+        </div>
+        <div>
+            <label for="location">Location</label>
+            <input type="text" id="location" name="attraction[location]" value="<%= attraction.location %>">
+        </div>
+        <button>Update Attraction</button>
+    </form>
+    <a href="/attractions/<%= attraction._id%>">Back To Attraction</a>
+</body>
+</html>

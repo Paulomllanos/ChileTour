@@ -16,15 +16,21 @@ db.once("open", () => {
     console.log("Database Connected");
 });
 
+const sample = array => array[Math.floor(Math.random() * array.length)];   
+
+
 const seedDB = async() => {
     await Attractions.deleteMany({});
     for (let i = 0; i < 50; i++) {
         const random1000 = Math.floor(Math.random() * 100);
         const attrac = new Attractions({
-            location: `${cities[random1000].city}, ${cities[random1000].state}`
+            location: `${cities[random1000].city}, ${cities[random1000].state}`,
+            title: `${sample(descriptors)} ${sample(places)}`
         })
         await attrac.save();   
     }
 }
 
-seedDB();
+seedDB().then(() => {
+    mongoose.connection.close();
+})
