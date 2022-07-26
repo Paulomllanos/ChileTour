@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const AttractionsSchema = new Schema({
     title: String,
-    price: String,
+    image: String,
+    price: Number,
     description: String,
     location: String,
 });
