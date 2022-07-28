@@ -2,10 +2,13 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
+const {attractionSchema} = require('./schemas.js');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
 const Attractions = require('./models/attractions');
+
+// Joi = validaciones por el lado del server
 
 mongoose.connect('mongodb://127.0.0.1:27017/tourApp', {
     useNewUrlParser: true,
@@ -27,6 +30,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 
+const validateAttraction = (req, res, next) => {
+    const { error } = attractionSchema.validate(req.body);
+    if(error){
+        const msg = error.details.map(el => el.message).join(',')
+       throw new ExpressError(msg, 400); 
+    } else {
+        next();
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home')
 });
@@ -41,8 +54,8 @@ app.get('/attractions/new', (req, res) => {
     res.render('attractions/new');
 });
 
-app.post('/attractions', catchAsync(async (req, res, next) => {
-    if (!req.body.campground) throw new ExpressError('Invalid Attraction Data!', 400);
+app.post('/attractions', validateAttraction, catchAsync(async (req, res, next) => {
+    // if (!req.body.campground) throw new ExpressError('Invalid Attraction Data!', 400);
     const attraction = new Attractions(req.body.attraction);
     await attraction.save();
     res.redirect(`/attractions/${attraction._id}`);
@@ -59,7 +72,7 @@ app.get('/attractions/:id/edit', catchAsync(async (req, res) => {
     res.render('attractions/edit', { attraction });
 }));
 
-app.put('/attractions/:id', catchAsync(async (req, res) => {
+app.put('/attractions/:id', validateAttraction, catchAsync(async (req, res) => {
     const { id } = req.params;
     const attraction = await Attractions.findByIdAndUpdate(id, { ...req.body.attraction });
     res.redirect(`/attractions/${attraction._id}`);
