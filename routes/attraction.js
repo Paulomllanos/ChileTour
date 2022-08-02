@@ -31,12 +31,17 @@ router.post('/', validateAttraction, catchAsync(async (req, res, next) => {
     // if (!req.body.campground) throw new ExpressError('Invalid Attraction Data!', 400);
     const attraction = new Attractions(req.body.attraction);
     await attraction.save();
+    req.flash('success', 'Successfully made a new attraction!');
     res.redirect(`/attractions/${attraction._id}`);
 }));
 
 //Mostrar informacion de atraccion seleccionada
 router.get('/:id', catchAsync(async (req, res) => {
     const attraction = await Attractions.findById(req.params.id).populate('reviews');
+    if(!attraction){
+        req.flash('error', 'Cannot find that attraction!');
+        return res.redirect('/attractions')
+    }
     res.render('attractions/show', { attraction });
 }));
 
@@ -50,6 +55,7 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
 router.put('/:id', validateAttraction, catchAsync(async (req, res) => {
     const { id } = req.params;
     const attraction = await Attractions.findByIdAndUpdate(id, { ...req.body.attraction });
+    req.flash('success', 'Successfully updated attraction!');
     res.redirect(`/attractions/${attraction._id}`);
 }));
 
@@ -57,6 +63,7 @@ router.put('/:id', validateAttraction, catchAsync(async (req, res) => {
 router.delete('/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     await Attractions.findByIdAndDelete(id);
+    req.flash('success', 'Successfully deleted attraction!');
     res.redirect('/attractions');
 }));
 
