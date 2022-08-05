@@ -29,9 +29,18 @@ const seedDB = async() => {
             author: '62e9fafd43796afda018414a',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
-            image: 'https://source.unsplash.com/collection/9659363',
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam itaque libero ut aspernatur voluptatem repudiandae quod nam aut quis! Sapiente vitae nihil corrupti et totam rerum ipsam quibusdam nulla sed.',
-            price
+            price,
+            images: [
+                {
+                  url: 'https://res.cloudinary.com/paulomllanos/image/upload/v1659644456/ChileTour/ho1q0ptb5cjrash1ahud.jpg',
+                  filename: 'ChileTour/ho1q0ptb5cjrash1ahud'
+                },
+                {
+                  url: 'https://res.cloudinary.com/paulomllanos/image/upload/v1659644456/ChileTour/o9yblv6dmgosunvnt3eu.jpg',
+                  filename: 'ChileTour/o9yblv6dmgosunvnt3eu'
+                }
+            ]
         })
         await attrac.save();   
     }

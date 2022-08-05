@@ -1,4 +1,8 @@
 const Attractions = require('../models/attractions');
+const mapGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mapGeocoding({ accessToken: mapBoxToken });
+const { cloudinary } = require('../cloudinary');
 
 module.exports.index = async (req, res) => {
     const attractions = await Attractions.find({});
@@ -13,11 +17,18 @@ module.exports.renderNewForm = (req, res) => {
 };
 
 module.exports.newAttraction = async (req, res, next) => {
-    const attraction = new Attractions(req.body.attraction);
-    attraction.author = req.user._id;
-    await attraction.save();
-    req.flash('success', 'Successfully made a new attraction!');
-    res.redirect(`/attractions/${attraction._id}`);
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.attraction.location,
+        limit: 1
+    }).send();
+    res.send(geoData.body.features[0].geometry.coordinates);
+    // const attraction = new Attractions(req.body.attraction);
+    // attraction.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    // attraction.author = req.user._id;
+    // await attraction.save();
+    // console.log(attraction);
+    // req.flash('success', 'Successfully made a new attraction!');
+    // res.redirect(`/attractions/${attraction._id}`);
 };
 
 module.exports.showAttraction = async (req, res) => {
@@ -49,7 +60,18 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.editAttraction = async (req, res) => {
     const { id } = req.params;
+    console.log(req.body);
     const attraction = await Attractions.findByIdAndUpdate(id, { ...req.body.attraction });
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    attraction.images.push(...imgs);
+    await attraction.save();
+    if (req.body.deleteImages) {
+        for(let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
+        await attraction.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages }}}})
+        console.log(attraction)
+    }
     req.flash('success', 'Successfully updated attraction!');
     res.redirect(`/attractions/${attraction._id}`);
 };
