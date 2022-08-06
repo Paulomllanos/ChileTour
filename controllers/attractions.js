@@ -21,14 +21,14 @@ module.exports.newAttraction = async (req, res, next) => {
         query: req.body.attraction.location,
         limit: 1
     }).send();
-    res.send(geoData.body.features[0].geometry.coordinates);
-    // const attraction = new Attractions(req.body.attraction);
-    // attraction.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    // attraction.author = req.user._id;
-    // await attraction.save();
-    // console.log(attraction);
-    // req.flash('success', 'Successfully made a new attraction!');
-    // res.redirect(`/attractions/${attraction._id}`);
+    const attraction = new Attractions(req.body.attraction);
+    attraction.geometry = geoData.body.features[0].geometry;
+    attraction.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    attraction.author = req.user._id;
+    await attraction.save();
+    console.log(attraction);
+    req.flash('success', 'Successfully made a new attraction!');
+    res.redirect(`/attractions/${attraction._id}`);
 };
 
 module.exports.showAttraction = async (req, res) => {

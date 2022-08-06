@@ -7,6 +7,8 @@ const ImageSchema = new Schema({
     filename: String
 });
 
+const opts = { toJSON: { virtuals: true } };
+
 ImageSchema.virtual('thumbnail').get(function(){
     return this.url.replace('/upload', '/upload/w_200');
 });
@@ -14,6 +16,17 @@ ImageSchema.virtual('thumbnail').get(function(){
 const AttractionsSchema = new Schema({
     title: String,
     images: [ImageSchema],
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     price: Number,
     description: String,
     location: String,
@@ -27,6 +40,13 @@ const AttractionsSchema = new Schema({
             ref: 'Review'
         }
     ]
+}, opts);
+
+AttractionsSchema.virtual('properties.popUpMarkup').get(function(){
+    return `
+    <strong><a href="/attractions/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 50)}...</p>
+    `;
 });
 
 AttractionsSchema.post('findOneAndDelete', async function (doc) {
