@@ -10,6 +10,8 @@ map.on('style.load', () => {
 map.setFog({}); // Set the default atmosphere style
 });
 
+map.addControl(new mapboxgl.NavigationControl());
+
 new mapboxgl.Marker()
 .setLngLat(attraction.geometry.coordinates)
 .setPopup(
